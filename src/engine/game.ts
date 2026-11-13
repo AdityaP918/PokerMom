@@ -9,7 +9,7 @@ const active=(p:Player)=>!p.eliminated&&p.chips>0;
 const inHand=(p:Player)=>!p.eliminated&&!p.folded;
 const nextSeat=(s:GameState,from:number,predicate:(p:Player)=>boolean=active)=>{for(let n=1;n<=s.players.length;n++){const i=(from+n)%s.players.length;if(predicate(s.players[i]))return i;}return from;};
 
-export const defaultConfig:GameConfig={mode:'cash',playerCount:4,smallBlind:1,bigBlind:2,startingStack:200,assistance:'learn',difficulty:'beginner',sound:true,reducedMotion:false,largeText:true,tableUpdates:true};
+export const defaultConfig:GameConfig={mode:'cash',playerCount:4,smallBlind:1,bigBlind:2,startingStack:200,assistance:'learn',difficulty:'beginner',sound:true,reducedMotion:false,largeText:true,tableUpdates:true,tableColor:'green'};
 
 export function createGame(config:GameConfig,seed=Date.now()>>>0):GameState{
   const players:Player[]=Array.from({length:config.playerCount},(_,i)=>({id:i===0?'meena':`bot-${i}`,name:i===0?'Meena':BOT_NAMES[i-1],isHuman:i===0,chips:config.startingStack,startingChips:config.startingStack,cards:[],folded:false,allIn:false,eliminated:false,streetBet:0,totalBet:0,acted:false,potsWon:0,largestPot:0}));

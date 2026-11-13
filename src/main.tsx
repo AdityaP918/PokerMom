@@ -6,6 +6,9 @@ import './ui/r2.css';
 import './ui/r3.css';
 import './ui/r3-fixes.css';
 import './ui/accessibility.css';
+import './ui/review-local.css';
+import './ui/review-local-fixes.css';
+import './ui/final-polish.css';
 
 render(<App />, document.getElementById('app')!);
 

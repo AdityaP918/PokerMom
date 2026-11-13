@@ -3,7 +3,7 @@ import { applyAction,createGame,legalActions,playerView } from './game';
 import { decide } from './bot';
 import type { GameConfig } from './types';
 
-const config:GameConfig={mode:'cash',playerCount:4,smallBlind:1,bigBlind:2,startingStack:200,assistance:'learn',difficulty:'challenging',sound:false,reducedMotion:true,largeText:true,tableUpdates:true};
+const config:GameConfig={mode:'cash',playerCount:4,smallBlind:1,bigBlind:2,startingStack:200,assistance:'learn',difficulty:'challenging',sound:false,reducedMotion:true,largeText:true,tableUpdates:true,tableColor:'green'};
 
 describe('fair game state',()=>{
   it('gives a bot view no deck or opponent hole cards',()=>{

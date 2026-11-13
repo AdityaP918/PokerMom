@@ -5,13 +5,14 @@ export type Stage = 'preflop'|'flop'|'turn'|'river'|'showdown'|'complete';
 export type Mode = 'cash'|'tournament';
 export type Assistance = 'learn'|'practice'|'play';
 export type Difficulty = 'beginner'|'developing'|'challenging';
+export type TableColor = 'green'|'red'|'orange'|'purple';
 export type Personality = 'cautious'|'balanced'|'bold'|'deceptive'|'unpredictable';
 export type ActionKind = 'fold'|'check'|'call'|'bet'|'raise'|'all-in';
 
 export interface GameConfig {
   mode: Mode; playerCount: number; smallBlind: number; bigBlind: number;
   startingStack: number; assistance: Assistance; difficulty: Difficulty;
-  sound: boolean; reducedMotion: boolean; largeText: boolean; tableUpdates: boolean;
+  sound: boolean; reducedMotion: boolean; largeText: boolean; tableUpdates: boolean; tableColor: TableColor;
 }
 export interface BotProfile { personality: Personality; difficulty: Difficulty }
 export interface BotHandState { confidence: number; pressure: number; suspicion: number; bluffOpportunity: number }
