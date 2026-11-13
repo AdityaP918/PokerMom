@@ -1,0 +1,2 @@
+.reference-layer{width:min(600px,calc(100vw - 28px))}.floating-guide{width:100%}
+@media(max-width:760px){.reference-layer{width:calc(100vw - 14px)}}

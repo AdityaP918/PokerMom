@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#07382e"/>
+  <path d="M256 82C210 151 123 201 123 287c0 64 55 99 111 72l-22 70h88l-22-70c56 27 111-8 111-72 0-86-87-136-133-205Z" fill="#f7d56b"/>
+  <text x="256" y="325" text-anchor="middle" font-family="Arial,sans-serif" font-size="92" font-weight="800" fill="#07382e">PM</text>
+</svg>

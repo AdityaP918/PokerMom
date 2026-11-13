@@ -1,0 +1,11 @@
+{
+  "name": "PokerMom — Meena's Poker Table",
+  "short_name": "PokerMom",
+  "description": "A calm, offline Texas Hold’em learning table.",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5efe3",
+  "theme_color": "#07382e",
+  "icons": [{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
