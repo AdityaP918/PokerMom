@@ -1,5 +1,5 @@
 import { describe,expect,it } from 'vitest';
-import { applyAction,createGame,legalActions,playerView } from './game';
+import { applyAction,createGame,legalActions,playerView,startHand } from './game';
 import { assess,decide } from './bot';
 import type { GameConfig } from './types';
 
@@ -42,6 +42,11 @@ describe('fair game state',()=>{
     expect(game.players.reduce((n,p)=>n+p.chips+p.totalBet,0)+game.pot).toBe(before);
   });
   it('serialises and restores exactly',()=>{const game=createGame(config,77);expect(JSON.parse(JSON.stringify(game))).toEqual(game)});
+  it('raises tournament blinds progressively and caps the big blind at $50',()=>{
+    let game=createGame({...config,mode:'tournament'},101);const levels:number[]=[];
+    for(let i=0;i<10;i++){game=startHand({...game,handsAtLevel:4});levels.push(game.config.bigBlind);}
+    expect(levels).toEqual([4,6,8,10,20,30,40,50,50,50]);
+  });
   it('allows Meena to fold even when checking is free',()=>{
     const game=createGame(config,81);game.currentPlayer=0;game.currentBet=game.players[0].streetBet;
     expect(legalActions(game,0)).toContain('fold');

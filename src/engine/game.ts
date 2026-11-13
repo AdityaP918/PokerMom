@@ -4,6 +4,7 @@ import { assess, freshBotState, newBotProfile } from './bot';
 import type { ActionKind, GameAction, GameConfig, GameState, Player, PlayerView } from './types';
 
 const BOT_NAMES=['Adi','Rover','Kiaan','Sofia','Theo','Yuki','Hana','Luca','Maya','Noah','Anika','Emil'];
+const TOURNAMENT_BLINDS=[[1,2],[2,4],[3,6],[4,8],[5,10],[10,20],[15,30],[20,40],[25,50]] as const;
 const clone=<T,>(v:T):T=>JSON.parse(JSON.stringify(v));
 const active=(p:Player)=>!p.eliminated&&p.chips>0;
 const inHand=(p:Player)=>!p.eliminated&&!p.folded;
@@ -22,7 +23,11 @@ function post(s:GameState,index:number,amount:number,label:string){const paid=pa
 
 export function startHand(input:GameState):GameState{
   const s=clone(input); s.handNumber++;s.handsAtLevel++;
-  if(s.config.mode==='tournament'&&s.handsAtLevel>3){s.blindLevel++;s.handsAtLevel=1;s.config.smallBlind*=2;s.config.bigBlind*=2;}
+  if(s.config.mode==='tournament'){
+    if(s.handsAtLevel>3){s.blindLevel=Math.min(s.blindLevel+1,TOURNAMENT_BLINDS.length);s.handsAtLevel=1;}
+    const [small,big]=TOURNAMENT_BLINDS[Math.min(s.blindLevel-1,TOURNAMENT_BLINDS.length-1)];
+    s.config.smallBlind=small;s.config.bigBlind=big;
+  }
   for(const p of s.players){if(s.config.mode==='tournament'&&p.chips===0)p.eliminated=true;p.cards=[];p.folded=p.eliminated;p.allIn=false;p.streetBet=0;p.totalBet=0;p.acted=false;}
   if(s.players.filter(active).length<2){s.stage='complete';return s;}
   s.dealer=nextSeat(s,s.dealer);s.board=[];s.pot=0;s.stage='preflop';s.currentBet=0;s.minRaise=s.config.bigBlind;s.actions=[];s.winnerIds=undefined;s.handMessage=undefined;
