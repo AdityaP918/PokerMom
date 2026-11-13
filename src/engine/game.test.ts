@@ -1,6 +1,6 @@
 import { describe,expect,it } from 'vitest';
 import { applyAction,createGame,legalActions,playerView } from './game';
-import { decide } from './bot';
+import { assess,decide } from './bot';
 import type { GameConfig } from './types';
 
 const config:GameConfig={mode:'cash',playerCount:4,smallBlind:1,bigBlind:2,startingStack:200,assistance:'learn',difficulty:'challenging',sound:false,reducedMotion:true,largeText:true,tableUpdates:true,tableColor:'green'};
@@ -21,6 +21,20 @@ describe('fair game state',()=>{
     const game=createGame(config,7);const bot=game.players[1];const [decision,next]=decide(playerView(game,1),bot.profile!,bot.botState!,99);
     expect(decision.explanation).toContain('continuing costs');
     expect(next).not.toEqual(bot.botState);
+  });
+  it('values playable pre-flop cards as playable rather than auto-folding the table',()=>{
+    const game=createGame(config,7);const original=playerView(game,1);
+    const view={...original,self:{...original.self,cards:[{rank:13 as const,suit:'hearts' as const},{rank:12 as const,suit:'hearts' as const}]}};
+    expect(assess(view).strength).toBeGreaterThan(.6);
+  });
+  it('does not make most seven-seat bots fold automatically before the flop',()=>{
+    let folds=0;
+    for(let seed=1;seed<=80;seed++){
+      const game=createGame({...config,playerCount:7},seed),bot=game.players[3];
+      const [decision]=decide(playerView(game,3),bot.profile!,bot.botState!,seed*17);
+      if(decision.kind==='fold')folds++;
+    }
+    expect(folds).toBeLessThan(40);
   });
   it('conserves chips after a legal action',()=>{
     let game=createGame(config,8);const before=game.players.reduce((n,p)=>n+p.chips+p.totalBet,0);

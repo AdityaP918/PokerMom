@@ -5,6 +5,18 @@ import type { ActionKind, BotDecision, BotHandState, BotProfile, Personality, Pl
 export const personalities: Personality[]=['cautious','balanced','bold','deceptive','unpredictable'];
 const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 
+function preflopStrength(view:PlayerView){
+  const cards=view.self.cards;if(cards.length!==2)return 0;
+  const [high,low]=cards.map(c=>c.rank).sort((a,b)=>b-a);
+  if(high===low)return clamp(.5+(high-2)/12*.43);
+  const suited=cards[0].suit===cards[1].suit,gap=high-low;
+  let strength=.18+(high-2)/12*.36+(low-2)/12*.15;
+  if(suited)strength+=.07;
+  if(gap===1)strength+=.08;else if(gap===2)strength+=.04;else if(gap>=5)strength-=.07;
+  if(high>=13&&low>=10)strength+=.08;
+  return clamp(strength);
+}
+
 export function newBotProfile(difficulty:BotProfile['difficulty'],seed:number):[BotProfile,number]{
   const [r,next]=nextRandom(seed); return [{personality:personalities[Math.floor(r*personalities.length)],difficulty},next];
 }
@@ -13,8 +25,7 @@ export const freshBotState=():BotHandState=>({confidence:.35,pressure:.1,suspici
 export function assess(view:PlayerView):SituationAssessment{
   const hand=evaluate([...view.self.cards,...view.board]);
   const rankBoost=(hand.values[0]||2)/14;
-  const pocketPair=view.stage==='preflop'&&view.self.cards.length===2&&view.self.cards[0].rank===view.self.cards[1].rank;
-  const strength=clamp(hand.category/8*.86+rankBoost*.14+(pocketPair?.1:0));
+  const strength=view.stage==='preflop'?preflopStrength(view):clamp(hand.category/8*.86+rankBoost*.14);
   const toCall=view.toCall;
   const potOdds=toCall<=0?0:toCall/(view.pot+toCall);
   const ranks=view.self.cards.map(c=>c.rank);
@@ -43,7 +54,7 @@ export function decide(view:PlayerView,profile:BotProfile,state:BotHandState,see
   const [random,next]=nextRandom(seed);
   const noise={beginner:.25,developing:.14,challenging:.07}[profile.difficulty];
   const temperament=profile.personality==='cautious'?-.12:profile.personality==='bold'?.12:profile.personality==='unpredictable'?(random-.5)*.3:0;
-  const score=clamp(a.strength*.65+a.drawPotential*.12+evolved.confidence*.18+evolved.bluffOpportunity*.12+temperament+(random-.5)*noise-evolved.pressure*.12);
+  const score=clamp(a.strength*.65+a.drawPotential*.12+evolved.confidence*.18+evolved.bluffOpportunity*.12+temperament+(random-.5)*noise-evolved.pressure*.12+(view.stage==='preflop'?.12:0));
   const canCheck=a.toCall===0, callThreshold=a.potOdds+(profile.difficulty==='beginner'?.08:0);
   let kind:ActionKind,amount=0;
   if(!canCheck&&score<callThreshold){kind='fold';}

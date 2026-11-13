@@ -10,6 +10,7 @@ import './ui/review-local.css';
 import './ui/review-local-fixes.css';
 import './ui/final-polish.css';
 import './ui/last-tweaks.css';
+import './ui/v1-polish.css';
 
 render(<App />, document.getElementById('app')!);
 
